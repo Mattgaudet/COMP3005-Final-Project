@@ -17,21 +17,25 @@ def connect_to_database():
 def insert_into_matches(conn, match_data):
     cursor = conn.cursor()
     for match in match_data:
-        if match.get('referee') is not None: #since referee is sometimes None
-            referee_id = match['referee']['id']
-        else:
-            referee_id = None
-        cursor.execute("""
-            INSERT INTO Matches (match_id, match_date, kick_off, competition_id, season_id, home_team_id, 
-            home_team_manager_id, away_team_id, away_team_manager_id, home_score, away_score, match_status, 
-            match_week, competition_stage_id, stadium_id, referee_id)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-            (match['match_id'], match['match_date'], match['kick_off'], match['competition']['competition_id'], 
-             match['season']['season_id'], match['home_team']['home_team_id'], match['home_team']['managers'][0]['id'], 
-             match['away_team']['away_team_id'], match['away_team']['managers'][0]['id'], match['home_score'], 
-             match['away_score'], match['match_status'], match['match_week'], match['competition_stage']['id'],
-             match['stadium']['id'], referee_id)
-        )
+        # Check if the team already exists in the table
+        cursor.execute("SELECT 1 FROM Matches WHERE match_id = %s", (match['match_id'],))
+        existing_match = cursor.fetchone()
+        if not existing_match:
+            if match.get('referee') is not None: #since referee is sometimes None
+                referee_id = match['referee']['id']
+            else:
+                referee_id = None
+            cursor.execute("""
+                INSERT INTO Matches (match_id, match_date, kick_off, competition_id, season_id, home_team_id, 
+                home_team_manager_id, away_team_id, away_team_manager_id, home_score, away_score, match_status, 
+                match_week, competition_stage_id, stadium_id, referee_id)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                (match['match_id'], match['match_date'], match['kick_off'], match['competition']['competition_id'], 
+                match['season']['season_id'], match['home_team']['home_team_id'], match['home_team']['managers'][0]['id'], 
+                match['away_team']['away_team_id'], match['away_team']['managers'][0]['id'], match['home_score'], 
+                match['away_score'], match['match_status'], match['match_week'], match['competition_stage']['id'],
+                match['stadium']['id'], referee_id)
+            )
     conn.commit()
 
 # Function to insert data into the Teams table
@@ -101,6 +105,23 @@ def insert_into_stadiums(conn, match_data):
             )
     conn.commit()
 
+# Function to insert data into the Stadiums table
+def insert_into_competitions(conn, competition_data):
+    cursor = conn.cursor()
+    for comp in competition_data:
+        # Check if the team already exists in the table
+        cursor.execute("SELECT 1 FROM Competitions WHERE competition_id = %s", (comp['competition_id'],))
+        existing_competition = cursor.fetchone()
+        if not existing_competition:
+            cursor.execute("""
+                INSERT INTO Competitions (competition_id, season_id, country_name, competition_name, competition_gender,
+                competition_youth, competition_international, season_name)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+                (comp['competition_id'], comp['season_id'], comp['country_name'], comp['competition_name'], 
+                 comp['competition_gender'], comp['competition_youth'], comp['competition_international'], comp['season_name'])
+            )
+    conn.commit()
+
 # Function to parse JSON data and insert into tables
 def insert_match_data_from_json(conn, json_file):
     with open(json_file, 'r', encoding="utf-8") as f:
@@ -110,11 +131,21 @@ def insert_match_data_from_json(conn, json_file):
         insert_into_referees(conn, match_data)
         insert_into_stadiums(conn, match_data)
 
+def insert_competition_data_from_jason(conn, json_file):
+    with open(json_file, 'r', encoding="utf-8") as f:
+        match_data = json.load(f)
+        insert_into_competitions(conn, match_data)
+
 # Main function
 def main():
     conn = connect_to_database()
-    json_file = "Data\Matches\A1.json"  # Path to JSON file
+    # Matches
+    json_file = "Data\\Matches\\A1.json"  # Path to JSON file
     insert_match_data_from_json(conn, json_file)
+
+    #Competitions
+    competition_json_file = "Data\\competitions.json"
+    insert_competition_data_from_jason(conn, competition_json_file)
     conn.close()
 
 if __name__ == "__main__":
