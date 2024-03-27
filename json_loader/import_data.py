@@ -122,7 +122,7 @@ def insert_into_competitions(conn, competition_data):
             )
     conn.commit()
 
-# Function to parse JSON data and insert into tables
+# Function to parse Match JSON data and insert into tables
 def insert_match_data_from_json(conn, json_file):
     with open(json_file, 'r', encoding="utf-8") as f:
         match_data = json.load(f)
@@ -131,10 +131,11 @@ def insert_match_data_from_json(conn, json_file):
         insert_into_referees(conn, match_data)
         insert_into_stadiums(conn, match_data)
 
+# Function to parse Competition JSON data and insert into tables
 def insert_competition_data_from_jason(conn, json_file):
     with open(json_file, 'r', encoding="utf-8") as f:
-        match_data = json.load(f)
-        insert_into_competitions(conn, match_data)
+        competition_data = json.load(f)
+        insert_into_competitions(conn, competition_data)
 
 # Main function
 def main():
