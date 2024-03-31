@@ -44,9 +44,7 @@ try:
             competition_id INT,
             season_id INT,
             home_team_id INT,
-            home_team_manager_id INT,
             away_team_id INT,
-            away_team_manager_id INT, 
             home_score INT,
             away_score INT,
             match_status VARCHAR(20),
@@ -59,6 +57,32 @@ try:
     #execute the SQL statement
     cursor.execute(create_table_query)
     print("matches database table created")
+
+    #create the Managers table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Managers (
+            manager_id INT PRIMARY KEY,
+            name VARCHAR(40),
+            nickname VARCHAR(40),
+            dob VARCHAR(20),
+            country_id INT
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Managers database table created")
+
+    #create the Match-Managers table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Match_Managers (
+            id SERIAL PRIMARY KEY,
+            match_id INT,
+            manager_id INT
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Match-Managers database table created")
 
     #create the Teams table
     create_table_query = '''
@@ -109,9 +133,58 @@ try:
     cursor.execute(create_table_query)
     print("countries database table created")
 
+    #create the Lineups table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Lineups (
+            lineup_id SERIAL PRIMARY KEY,
+            match_id INT,
+            team_id INT,
+            team_name VARCHAR(50),
+            player_id INT,
+            player_name VARCHAR(50),
+            player_nickname VARCHAR(50),
+            jersey_number INT,
+            country_id INT
+        );
+        '''
     #execute the SQL statement
-    #cursor.execute(insert_data_query)
-    #print("Data inserted into table")
+    cursor.execute(create_table_query)
+    print("lineups database table created")
+
+    #create the Cards table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Cards (
+            card_id SERIAL PRIMARY KEY,
+            match_id INT,
+            player_id INT,
+            time VARCHAR(20),
+            card_type VARCHAR(20),
+            reason VARCHAR(20),
+            period INT
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Cards database table created")
+
+    #create the Positions table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Positions (
+            position_id SERIAL PRIMARY KEY,
+            match_id INT,
+            player_id INT,
+            position VARCHAR(40),
+            from_time VARCHAR(10),
+            to_time VARCHAR(10),
+            from_period INT,
+            to_period INT,
+            start_reason VARCHAR(40),
+            end_reason VARCHAR(40)
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Positions database table created")
 
     #commit the changes
     conn.commit()
