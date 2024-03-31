@@ -1,4 +1,5 @@
 import json
+import os
 import psycopg
 from psycopg import Error
 
@@ -122,6 +123,11 @@ def insert_into_competitions(conn, competition_data):
             )
     conn.commit()
 
+# Function to insert data into the Lineups table
+def insert_into_lineups(conn, lineup_data):
+    cursor = conn.cursor()
+
+
 # Function to parse Match JSON data and insert into tables
 def insert_match_data_from_json(conn, json_file):
     with open(json_file, 'r', encoding="utf-8") as f:
@@ -141,13 +147,32 @@ def insert_competition_data_from_jason(conn, json_file):
 def main():
     conn = connect_to_database()
     # Matches
-    json_file = "Data\\Matches\\A1.json"  # Path to JSON file
+    json_file = "json_laoder\\Data\\Matches\\M90.json"  # Path to JSON file La Liga 20/21
+    insert_match_data_from_json(conn, json_file)
+    json_file = "json_loader\\Data\\Matches\\M44.json"  # Path to JSON file Premier League 03/04
     insert_match_data_from_json(conn, json_file)
 
     #Competitions
-    competition_json_file = "Data\\competitions.json"
+    competition_json_file = "json_loader\\Data\\competitions.json"
     insert_competition_data_from_jason(conn, competition_json_file)
+    
+
+    #Lineups
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    folder_path = os.path.join(script_dir, 'Data\\Lineups')
+    for filename in os.listdir(folder_path):
+        if os.path.isfile(os.path.join(folder_path, filename)):
+            file_path = os.path.join(folder_path, filename)
+            with open(file_path, 'r', encoding="utf-8") as file:
+                lineup_data = json.load(file)
+                insert_into_lineups(lineup_data)
+
+
     conn.close()
+
+
+
+
 
 if __name__ == "__main__":
     main()
