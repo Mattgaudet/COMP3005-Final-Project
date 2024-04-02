@@ -274,9 +274,156 @@ def insert_into_passes(conn, event_data, match):
                      technique_name, outcome_id, outcome_name)
                 )
     conn.commit()
+
+# Function to insert data into the Shots table
+def insert_into_shots(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('shot') is not None:
+            shot = event['shot']
+            deflected = shot['deflected'] if shot.get('deflected') is not None else None
+            aerial_won = shot['aerial_won'] if shot.get('aerial_won') is not None else None
+            follows_dribble = shot['follows_dribble'] if shot.get('follows_dribble') is not None else None
+            first_time = shot['first_time'] if shot.get('first_time') is not None else None
+            open_goal = shot['open_goal'] if shot.get('open_goal') is not None else None
+            statsbomb_xg = shot['statsbomb_xg'] if shot.get('statsbomb_xg') is not None else None
+            key_pass_id = shot['key_pass_id'] if shot.get('key_pass_id') is not None else None
+            cursor.execute("""
+                    INSERT INTO Shots (event_id, match_id, end_location, key_pass_id, statsbomb_xg, technique_id, technique_name,
+                    outcome_id, outcome_name, type_id, type_name, body_part_id, body_part_name, deflected, aerial_won, follows_dribble,
+                    first_time, open_goal)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (event['id'], match, shot['end_location'], key_pass_id, statsbomb_xg, shot['technique']['id'],
+                     shot['technique']['name'], shot['outcome']['id'], shot['outcome']['name'], shot['type']['id'], shot['type']['name'], 
+                     shot['body_part']['id'], shot['body_part']['name'], deflected, aerial_won, follows_dribble, first_time, open_goal)
+                )
+    conn.commit()
+
+# Function to insert data into the Duels table
+def insert_into_duels(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('duel') is not None:
+            duel = event['duel']
+            counterpress = duel['counterpress'] if duel.get('counterpress') is not None else None
+            outcome_id = duel['outcome']['id'] if duel.get('outcome') is not None else None
+            outcome_name = duel['outcome']['name'] if duel.get('outcome') is not None else None
+            cursor.execute("""
+                    INSERT INTO Duels (event_id, match_id, type_id, type_name, outcome_id, outcome_name, counterpress)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+                    (event['id'], match, duel['type']['id'], duel['type']['name'], outcome_id, outcome_name, counterpress)
+                )
+    conn.commit()
+
+# Function to insert data into the Dribbles table
+def insert_into_dribbles(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('dribble') is not None:
+            dribble = event['dribble']
+            overrun = dribble['overrun'] if dribble.get('overrun') is not None else None
+            nutmeg = dribble['nutmeg'] if dribble.get('nutmeg') is not None else None
+            no_touch = dribble['no_touch'] if dribble.get('no_touch') is not None else None
             
+            cursor.execute("""
+                    INSERT INTO Dribbles (event_id, match_id, outcome_id, outcome_name, overrun, nutmeg, no_touch)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+                    (event['id'], match, dribble['outcome']['id'], dribble['outcome']['name'], overrun, nutmeg, no_touch)
+                )
+    conn.commit()
+            
+# Function to insert data into the Blocks table
+def insert_into_blocks(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('block') is not None:
+            block = event['block']
+            deflection = block['deflection'] if block.get('deflection') is not None else None
+            save_block = block['save_block'] if block.get('save_block') is not None else None
+            offensive = block['offensive'] if block.get('offensive') is not None else None
+            counterpress = block['counterpress'] if block.get('counterpress') is not None else None
+            cursor.execute("""
+                    INSERT INTO Blocks (event_id, match_id, deflection, save_block, offensive, counterpress)
+                    VALUES (%s, %s, %s, %s, %s, %s)""",
+                    (event['id'], match, deflection, save_block, offensive, counterpress)
+                )
+    conn.commit()
 
+# Function to insert data into the Goalkeeper table
+def insert_into_goalkeeper(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('goalkeeper') is not None:
+            keeper = event['goalkeeper']
+            end_location = keeper['end_location'] if keeper.get('end_location') is not None else None
+            technique_id = keeper['technique_id'] if keeper.get('technique_id') is not None else None
+            technique_name = keeper['technique_name'] if keeper.get('technique_name') is not None else None
+            outcome_id = keeper['outcome_id'] if keeper.get('outcome_id') is not None else None
+            outcome_name = keeper['outcome_name'] if keeper.get('outcome_name') is not None else None
+            body_part_id = keeper['body_part_id'] if keeper.get('body_part_id') is not None else None
+            body_part_name = keeper['body_part_name'] if keeper.get('body_part_name') is not None else None
+            position_id = keeper['position']['id'] if keeper.get('position') is not None else None
+            position_name = keeper['position']['name'] if keeper.get('position') is not None else None
 
+            cursor.execute("""
+                    INSERT INTO Goalkeeper (event_id, match_id, technique_id, technique_name, position_id, position_name, type_id, type_name,
+                    outcome_id, outcome_name, body_part_id, body_part_name, end_location)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (event['id'], match, technique_id, technique_name, position_id, position_name, keeper['type']['id'],
+                     keeper['type']['name'], outcome_id, outcome_name, body_part_id, body_part_name, end_location)
+                )
+    conn.commit()
+
+# Function to insert data into the Substitutions table
+def insert_into_substitutions(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('substitution') is not None:
+            sub = event['substitution']
+            cursor.execute("""
+                    INSERT INTO Substitutions (event_id, match_id, outcome_id, outcome_name, replacement_id, replacement_name)
+                    VALUES (%s, %s, %s, %s, %s, %s)""",
+                    (event['id'], match, sub['outcome']['id'], sub['outcome']['name'], sub['replacement']['id'], sub['replacement']['name'])
+                )
+    conn.commit()
+
+# Function to insert data into the Foul_Committed table
+def insert_into_foul_committed(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('foul_committed') is not None:
+            foul = event['foul_committed']
+            offensive = foul['offensive'] if foul.get('offensive') is not None else None
+            advantage = foul['advantage'] if foul.get('advantage') is not None else None
+            penalty = foul['penalty'] if foul.get('penalty') is not None else None
+            type_id = foul['type']['id'] if foul.get('type') is not None else None
+            type_name = foul['type']['name'] if foul.get('type') is not None else None
+            card_id = foul['card']['id'] if foul.get('card') is not None else None
+            card_name = foul['card']['name'] if foul.get('card') is not None else None
+            counterpress = foul['counterpress'] if foul.get('counterpress') is not None else None
+            cursor.execute("""
+                    INSERT INTO Foul_Committed (event_id, match_id, offensive, advantage, penalty, type_id, type_name, card_id, card_name, counterpress)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (event['id'], match, offensive, advantage, penalty, type_id, type_name, card_id, card_name, counterpress)
+                )
+    conn.commit()
+
+# Function to insert data into the Foul_Won table
+def insert_into_foul_won(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('foul_won') is not None:
+            foul = event['foul_won']
+            defensive = foul['defensive'] if foul.get('defensive') is not None else None
+            advantage = foul['advantage'] if foul.get('advantage') is not None else None
+            penalty = foul['penalty'] if foul.get('penalty') is not None else None
+
+            cursor.execute("""
+                    INSERT INTO Foul_Won (event_id, match_id, defensive, advantage, penalty)
+                    VALUES (%s, %s, %s, %s, %s)""",
+                    (event['id'], match, defensive, advantage, penalty)
+                )
+    conn.commit()
 
 # Function to parse Match JSON data and insert into tables
 def insert_match_data_from_json(conn, json_file):
@@ -310,6 +457,15 @@ def insert_event_data_from_json(conn, json_file, filename):
         match_id = filename[:7]
         insert_into_events(conn, event_data, match_id)
         insert_into_passes(conn, event_data, match_id)
+        insert_into_shots(conn, event_data, match_id)
+        insert_into_duels(conn, event_data, match_id)
+        insert_into_dribbles(conn, event_data, match_id)
+        insert_into_blocks(conn, event_data, match_id)
+        insert_into_goalkeeper(conn, event_data, match_id)
+        insert_into_substitutions(conn, event_data, match_id)
+        insert_into_foul_committed(conn, event_data, match_id)
+        insert_into_foul_won(conn, event_data, match_id)
+
 
 
 # Main function
@@ -325,12 +481,13 @@ def main():
     competition_json_file = "json_loader\\Data\\competitions.json"
     insert_competition_data_from_json(conn, competition_json_file)
     
-    #Lineups (add all files from the Lineups folder) 
+    #Lineups (add all files from the Lineups folder) TODO add files from la liga 18/19 and 19/20 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     folder_path = os.path.join(script_dir, 'Data\\Lineups')
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
             file_path = os.path.join(folder_path, filename)
+            # if file_path[:4] in matches[]...
             insert_lineup_data_from_json(conn, file_path, filename)
             
     #Events (add all files from the Events folder) TODO add files from la liga 18/19 and 19/20 
@@ -340,9 +497,6 @@ def main():
         if os.path.isfile(os.path.join(folder_path, filename)):
             file_path = os.path.join(folder_path, filename)
             insert_event_data_from_json(conn, file_path, filename)
-
-
-
 
     conn.close()
 

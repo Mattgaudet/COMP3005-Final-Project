@@ -250,6 +250,123 @@ try:
     cursor.execute(create_table_query)
     print("Passes database table created")
 
+    #create the Duels table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Duels (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            type_id INT,
+            type_name TEXT,
+            outcome_id INT,
+            outcome_name TEXT,
+            counterpress BOOLEAN
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Duels database table created")
+
+    #create the Dribbles table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Dribbles (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            outcome_id INT,
+            outcome_name TEXT,
+            overrun BOOLEAN,
+            nutmeg BOOLEAN,
+            no_touch BOOLEAN
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Dribbles database table created")
+
+    #create the Blocks table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Blocks (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            deflection BOOLEAN,
+            save_block BOOLEAN,
+            offensive BOOLEAN,
+            counterpress BOOLEAN
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Blocks database table created")
+
+    #create the Goalkeeper table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Goalkeeper (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            technique_id INT,
+            technique_name TEXT,
+            position_id INT,
+            position_name TEXT,
+            type_id INT,
+            type_name TEXT,
+            outcome_id INT,
+            outcome_name TEXT,
+            body_part_id INT,
+            body_part_name TEXT,
+            end_location VARCHAR(20)
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Goalkeeper database table created")
+
+    #create the Substitutions table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Substitutions (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            outcome_id INT,
+            outcome_name TEXT,
+            replacement_id INT,
+            replacement_name TEXT
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Substitutions database table created")
+
+    #create the Foul_Committed table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Foul_Committed (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            offensive BOOLEAN,
+            advantage BOOLEAN,
+            penalty BOOLEAN,
+            type_id INT,
+            type_name TEXT,
+            card_id INT,
+            card_name TEXT,
+            counterpress BOOLEAN
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Foul_Committed database table created")
+
+    #create the Foul_Won table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Foul_Won (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            defensive BOOLEAN,
+            advantage BOOLEAN,
+            penalty BOOLEAN
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Foul_Won database table created")
+
     #commit the changes
     conn.commit()
     cursor.close()
