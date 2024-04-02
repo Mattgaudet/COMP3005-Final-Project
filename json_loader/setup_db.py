@@ -122,7 +122,7 @@ try:
     cursor.execute(create_table_query)
     print("stadiums database table created")
 
-    #create the matches table
+    #create the Countries table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Countries (
             country_id INT PRIMARY KEY,
@@ -185,6 +185,70 @@ try:
     #execute the SQL statement
     cursor.execute(create_table_query)
     print("Positions database table created")
+
+    #create the Events table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Events (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            index INT,
+            period INT,
+            timestamp VARCHAR(20),
+            minute INT,
+            second INT,
+            type_id INT,
+            type_name VARCHAR(30),
+            possession INT,
+            possession_team_id INT,
+            play_pattern_id INT,
+            play_pattern_name VARCHAR(30),
+            team_id INT,
+            player_id INT,
+            position_id INT,
+            position_name VARCHAR(30),
+            location VARCHAR(30),
+            duration VARCHAR(20),
+            under_pressure BOOLEAN,
+            off_camera BOOLEAN,
+            out BOOLEAN,
+            tactics_formation TEXT
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Events database table created")
+
+    #create the Passes table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Passes (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            recipient_id INT,
+            length NUMERIC(12, 8),
+            angle NUMERIC(12, 8),
+            height_id INT,
+            height_name TEXT,
+            end_location VARCHAR(20),
+            body_part_id INT,
+            body_part_name TEXT,
+            assisted_shot_id VARCHAR(100),
+            shot_assist BOOLEAN,
+            goal_assist BOOLEAN,
+            backheel BOOLEAN,
+            deflected BOOLEAN,
+            miscommunication BOOLEAN,
+            cross_ BOOLEAN,
+            cutback BOOLEAN,
+            switch BOOLEAN,
+            technique_id INT,
+            technique_name TEXT,
+            outcome_id INT,
+            outcome_name TEXT
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Passes database table created")
 
     #commit the changes
     conn.commit()

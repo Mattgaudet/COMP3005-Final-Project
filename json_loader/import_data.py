@@ -202,6 +202,81 @@ def insert_into_positions(conn, lineup_data, match):
                 )
     conn.commit()
 
+# Function to insert data into the Events table
+def insert_into_events(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        # Check if the event already exists in the table
+        cursor.execute("SELECT 1 FROM Events WHERE event_id = %s", (event['id'],))
+        existing_event = cursor.fetchone()
+        if not existing_event:
+            out = event['out'] if event.get('out') is not None else None
+            player = event['player']['id'] if event.get('player') is not None else None
+            if event.get('position') is not None: 
+                position_id = event['position']['id']
+                position_name = event['position']['name']
+            else:
+                position_id = None
+                position_name = None
+            off_camera = event['off_camera'] if event.get('off_camera') is not None else None
+            under_pressure = event['under_pressure'] if event.get('under_pressure') is not None else None
+            tactics_formation = event['tactics']['formation'] if event.get('tactics') is not None else None
+            location = event['location'] if event.get('location') is not None else None
+            duration = event['duration'] if event.get('duration') is not None else None
+            cursor.execute("""
+                INSERT INTO Events (event_id, match_id, index, period, timestamp, minute, second, 
+                type_id, type_name, possession, possession_team_id, play_pattern_id, play_pattern_name, 
+                team_id, player_id, position_id, position_name, location, duration, 
+                under_pressure, off_camera, out, tactics_formation)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                (event['id'], match, event['index'], event['period'], event['timestamp'], event['minute'], event['second'],
+                 event['type']['id'], event['type']['name'], event['possession'], event['possession_team']['id'],
+                 event['play_pattern']['id'], event['play_pattern']['name'],
+                 event['team']['id'], player, position_id, position_name, 
+                 location, duration, under_pressure, off_camera, out, tactics_formation)
+            )
+    conn.commit()
+
+# Function to insert data into the Passes table
+def insert_into_passes(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('pass') is not None:
+            _pass = event['pass']
+            recipient_id = _pass['recipient']['id'] if _pass.get('recipient') is not None else None
+            height_id = _pass['height']['id'] if _pass.get('height') is not None else None
+            height_name = _pass['height']['name'] if _pass.get('height') is not None else None
+            assisted_shot_id = _pass['assisted_shot_id'] if _pass.get('assisted_shot_id') is not None else None
+            shot_assist = _pass['shot_assist'] if _pass.get('shot_assist') is not None else None
+            goal_assist = _pass['goal_assist'] if _pass.get('goal_assist') is not None else None
+            backheel = _pass['backheel'] if _pass.get('backheel') is not None else None
+            deflected = _pass['deflected'] if _pass.get('deflected') is not None else None
+            miscommunication = _pass['miscommunication'] if _pass.get('miscommunication') is not None else None
+            cross = _pass['cross'] if _pass.get('cross') is not None else None
+            cutback = _pass['cutback'] if _pass.get('cutback') is not None else None
+            switch = _pass['switch'] if _pass.get('switch') is not None else None
+            technique_id = _pass['technique']['id'] if _pass.get('technique') is not None else None
+            technique_name = _pass['technique']['name'] if _pass.get('technique') is not None else None
+            outcome_id = _pass['outcome']['id'] if _pass.get('outcome') is not None else None
+            outcome_name = _pass['outcome']['name'] if _pass.get('outcome') is not None else None
+            body_part_id = _pass['body_part']['id'] if _pass.get('body_part') is not None else None
+            body_part_name = _pass['body_part']['name'] if _pass.get('body_part') is not None else None
+
+            cursor.execute("""
+                    INSERT INTO Passes (event_id, match_id, recipient_id, length, angle, height_id,
+                    height_name, end_location, body_part_id, body_part_name, assisted_shot_id, shot_assist,
+                    goal_assist, backheel, deflected, miscommunication, cross_, cutback, switch, technique_id,
+                    technique_name, outcome_id, outcome_name)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (event['id'], match, recipient_id, _pass['length'], _pass['angle'], height_id, height_name, 
+                     _pass['end_location'], body_part_id, body_part_name, assisted_shot_id,
+                     shot_assist, goal_assist, backheel, deflected, miscommunication, cross, cutback, switch, technique_id,
+                     technique_name, outcome_id, outcome_name)
+                )
+    conn.commit()
+            
+
+
 
 # Function to parse Match JSON data and insert into tables
 def insert_match_data_from_json(conn, json_file):
@@ -219,7 +294,7 @@ def insert_competition_data_from_json(conn, json_file):
         competition_data = json.load(f)
         insert_into_competitions(conn, competition_data)
 
-# Function to parse Competition JSON data and insert into tables
+# Function to parse Lineups JSON data and insert into tables
 def insert_lineup_data_from_json(conn, json_file, filename):
     with open(json_file, 'r', encoding="utf-8") as file:
         lineup_data = json.load(file)
@@ -227,6 +302,14 @@ def insert_lineup_data_from_json(conn, json_file, filename):
         insert_into_lineups(conn, lineup_data, match_id)
         insert_into_cards(conn, lineup_data, match_id)
         insert_into_positions(conn, lineup_data, match_id)
+
+# Function to parse Events JSON data and insert into tables
+def insert_event_data_from_json(conn, json_file, filename):
+    with open(json_file, 'r', encoding="utf-8") as file:
+        event_data = json.load(file)
+        match_id = filename[:7]
+        insert_into_events(conn, event_data, match_id)
+        insert_into_passes(conn, event_data, match_id)
 
 
 # Main function
@@ -242,7 +325,7 @@ def main():
     competition_json_file = "json_loader\\Data\\competitions.json"
     insert_competition_data_from_json(conn, competition_json_file)
     
-    #Lineups (add all files from the Lineups folder)
+    #Lineups (add all files from the Lineups folder) 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     folder_path = os.path.join(script_dir, 'Data\\Lineups')
     for filename in os.listdir(folder_path):
@@ -250,8 +333,13 @@ def main():
             file_path = os.path.join(folder_path, filename)
             insert_lineup_data_from_json(conn, file_path, filename)
             
-    #Events (add all files from the Events folder)
-
+    #Events (add all files from the Events folder) TODO add files from la liga 18/19 and 19/20 
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    folder_path = os.path.join(script_dir, 'Data\\Events')
+    for filename in os.listdir(folder_path):
+        if os.path.isfile(os.path.join(folder_path, filename)):
+            file_path = os.path.join(folder_path, filename)
+            insert_event_data_from_json(conn, file_path, filename)
 
 
 
