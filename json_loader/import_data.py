@@ -642,24 +642,31 @@ def insert_event_data_from_json(conn, json_file, filename):
 # Main function
 def main():
     conn = connect_to_database()
+    # *Change to your cloned repo data location*
+    path_to_cloned_repo_data = "C:\\Users\\mattg\\Documents\\School\\Third Year\\open-data\\data"
+
     # Matches
     match_ids = []
-    json_file = "json_loader\\Data\\matches\\11\\4.json"  # Path to JSON file La Liga 18/19
+    # Path to JSON file La Liga 18/19
+    json_file = os.path.join(path_to_cloned_repo_data, "matches", "11", "4.json")
     match_ids.extend(insert_match_data_from_json(conn, json_file))
-    json_file = "json_loader\\Data\\matches\\11\\42.json"  # Path to JSON file La Liga 19/20
+    # Path to JSON file La Liga 19/20
+    json_file = os.path.join(path_to_cloned_repo_data, "matches", "11", "42.json")
     match_ids.extend(insert_match_data_from_json(conn, json_file))
-    json_file = "json_loader\\Data\\matches\\11\\90.json"  # Path to JSON file La Liga 20/21
+    # Path to JSON file La Liga 20/21
+    json_file = os.path.join(path_to_cloned_repo_data, "matches", "11", "90.json")
     match_ids.extend(insert_match_data_from_json(conn, json_file))
-    json_file = "json_loader\\Data\\matches\\2\\44.json"  # Path to JSON file Premier League 03/04
+    # Path to JSON file Premier League 03/04
+    json_file = os.path.join(path_to_cloned_repo_data, "matches", "2", "44.json")
     match_ids.extend(insert_match_data_from_json(conn, json_file))
 
     #Competitions
-    competition_json_file = "json_loader\\Data\\competitions.json"
+    
+    competition_json_file = os.path.join(path_to_cloned_repo_data, "competitions.json")
     insert_competition_data_from_json(conn, competition_json_file)
     
     #Lineups 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    folder_path = os.path.join(script_dir, 'Data', 'Lineups')
+    folder_path = os.path.join(path_to_cloned_repo_data, "lineups")
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
             file_match_id = int(filename.split('.')[0])
@@ -669,8 +676,7 @@ def main():
                     insert_lineup_data_from_json(conn, file_path, filename)
 
     #Events 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    folder_path = os.path.join(script_dir, 'Data', 'Events')
+    folder_path = os.path.join(path_to_cloned_repo_data, "events")
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
             file_match_id = int(filename.split('.')[0])
