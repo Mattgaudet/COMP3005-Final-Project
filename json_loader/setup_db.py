@@ -394,6 +394,145 @@ try:
     cursor.execute(create_table_query)
     print("Foul_Won database table created")
 
+    #create the _50_50 table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS _50_50 (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            outcome_id INT,
+            outcome_name TEXT,
+            counterpress BOOLEAN
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("_50_50 database table created")
+
+    #create the Carry table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Carry (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            end_location VARCHAR(30)
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Carry database table created")
+
+    #create the Clearance table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Clearance (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            aerial_won BOOLEAN,
+            body_part_id INT,
+            body_part_name TEXT
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Clearance database table created")
+
+    #create the Dribbled_Past table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Dribbled_Past (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            counterpress BOOLEAN
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Dribbled_Past database table created")
+
+    #create the Bad_Behavior table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Bad_Behaviour (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            card_id INT,
+            card_name TEXT
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Bad_Behavior database table created")
+
+    #create the Ball_Receipt table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Ball_Receipt (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            outcome_id INT,
+            outcome_name TEXT
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Ball_Receipt database table created")
+
+    #create the Ball_Recovery table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Ball_Recovery (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            offensive BOOLEAN
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Ball_Recovery database table created")
+
+    #create the Injury_Stoppage table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Injury_Stoppage (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            in_chain BOOLEAN
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Injury_Stoppage database table created")
+
+    #create the Interception table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Interception (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            outcome_id INT,
+            outcome_name TEXT
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Interception database table created")
+
+    #create the Miscontrol table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Miscontrol (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            aerial_won BOOLEAN
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Miscontrol database table created")
+
+    #create the Player_Off table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Player_Off (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            permanent BOOLEAN
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Player_Off database table created")
+
     #commit the changes
     conn.commit()
     cursor.close()

@@ -422,6 +422,168 @@ def insert_into_foul_won(conn, event_data, match):
                 )
     conn.commit()
 
+# Function to insert data into the Foul_Won table
+def insert_into_50_50(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('50-50') is not None:
+            _50_50 = event['50-50']
+            outcome_id = _50_50['outcome']['id'] if _50_50.get('outcome') is not None else None
+            outcome_name = _50_50['outcome']['name'] if _50_50.get('outcome') is not None else None
+            counterpress = _50_50['counterpress'] if _50_50.get('counterpress') is not None else None
+            cursor.execute("""
+                    INSERT INTO _50_50 (event_id, match_id, outcome_id, outcome_name, counterpress)
+                    VALUES (%s, %s, %s, %s, %s)""",
+                    (event['id'], match, outcome_id, outcome_name, counterpress)
+                )
+    conn.commit()
+
+# Function to insert data into the Carry table
+def insert_into_carry(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('carry') is not None:
+            carry = event['carry']
+            end_location = carry['end_location'] if carry.get('end_location') is not None else None
+            cursor.execute("""
+                    INSERT INTO Carry (event_id, match_id, end_location)
+                    VALUES (%s, %s, %s)""",
+                    (event['id'], match, end_location)
+                )
+    conn.commit()
+
+# Function to insert data into the Clearance table
+def insert_into_clearance(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('clearance') is not None:
+            clearance = event['clearance']
+            aerial_won = clearance['aerial_won'] if clearance.get('aerial_won') is not None else None
+            body_part_id = clearance['body_part']['id'] if clearance.get('body_part') is not None else None
+            body_part_name = clearance['body_part']['name'] if clearance.get('body_part') is not None else None
+            cursor.execute("""
+                    INSERT INTO Clearance (event_id, match_id, aerial_won, body_part_id, body_part_name)
+                    VALUES (%s, %s, %s, %s, %s)""",
+                    (event['id'], match, aerial_won, body_part_id, body_part_name)
+                )
+    conn.commit()
+
+# Function to insert data into the Dribbled_Past table
+def insert_into_dribbled_past(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('dribbled_past') is not None:
+            dribble = event['dribbled_past']
+            counterpress = dribble['counterpress'] if dribble.get('counterpress') is not None else None
+            cursor.execute("""
+                    INSERT INTO Dribbled_Past (event_id, match_id, counterpress)
+                    VALUES (%s, %s, %s)""",
+                    (event['id'], match, counterpress)
+                )
+    conn.commit()
+
+# Function to insert data into the Bad_Behaviour table
+def insert_into_bad_behaviour(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('bad_behaviour') is not None:
+            bad = event['bad_behaviour']
+            card_id = bad['card']['id'] if bad.get('card') is not None else None
+            card_name = bad['card']['name'] if bad.get('card') is not None else None
+            cursor.execute("""
+                    INSERT INTO Bad_Behaviour (event_id, match_id, card_id, card_name)
+                    VALUES (%s, %s, %s, %s)""",
+                    (event['id'], match, card_id, card_name)
+                )
+    conn.commit()
+
+# Function to insert data into the Ball_Receipt table
+def insert_into_ball_receipt(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('ball_receipt') is not None:
+            ball = event['ball_receipt']
+            outcome_id = ball['outcome']['id'] if ball.get('outcome') is not None else None
+            outcome_name = ball['outcome']['name'] if ball.get('outcome') is not None else None
+            cursor.execute("""
+                    INSERT INTO Ball_Receipt (event_id, match_id, outcome_id, outcome_name)
+                    VALUES (%s, %s, %s, %s)""",
+                    (event['id'], match, outcome_id, outcome_name)
+                )
+    conn.commit()
+
+# Function to insert data into the Ball_Recovery table
+def insert_into_ball_recovery(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('ball_recovery') is not None:
+            ball = event['ball_recovery']
+            offensive = ball['offensive'] if ball.get('offensive') is not None else None
+            cursor.execute("""
+                    INSERT INTO Ball_Recovery (event_id, match_id, offensive)
+                    VALUES (%s, %s, %s)""",
+                    (event['id'], match, offensive)
+                )
+    conn.commit()
+
+# Function to insert data into the Injury_Stoppage table
+def insert_into_injury_stoppage(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('injury_stoppage') is not None:
+            injury = event['injury_stoppage']
+            in_chain = injury['in_chain'] if injury.get('in_chain') is not None else None
+            cursor.execute("""
+                    INSERT INTO Injury_Stoppage (event_id, match_id, in_chain)
+                    VALUES (%s, %s, %s)""",
+                    (event['id'], match, in_chain)
+                )
+    conn.commit()
+
+
+# Function to insert data into the Interception table
+def insert_into_interception(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('interception') is not None:
+            interception = event['interception']
+            outcome_id = interception['outcome']['id'] if interception.get('outcome') is not None else None
+            outcome_name = interception['outcome']['name'] if interception.get('outcome') is not None else None
+            cursor.execute("""
+                    INSERT INTO Interception (event_id, match_id, outcome_id, outcome_name)
+                    VALUES (%s, %s, %s, %s)""",
+                    (event['id'], match, outcome_id, outcome_name)
+                )
+    conn.commit()
+
+# Function to insert data into the Miscontrol table
+def insert_into_miscontrol(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('miscontrol') is not None:
+            mis = event['miscontrol']
+            aerial_won = mis['aerial_won'] if mis.get('aerial_won') is not None else None
+            cursor.execute("""
+                    INSERT INTO Miscontrol (event_id, match_id, aerial_won)
+                    VALUES (%s, %s, %s)""",
+                    (event['id'], match, aerial_won)
+                )
+    conn.commit()
+
+# Function to insert data into the Player_Off table
+def insert_into_player_off(conn, event_data, match):
+    cursor = conn.cursor()
+    for event in event_data:
+        if event.get('player_off') is not None:
+            player = event['player_off']
+            perm = player['permanent'] if player.get('permanent') is not None else None
+            cursor.execute("""
+                    INSERT INTO Player_Off (event_id, match_id, permanent)
+                    VALUES (%s, %s, %s)""",
+                    (event['id'], match, perm)
+                )
+    conn.commit()
+
 # Function to parse Match JSON data and insert into tables
 def insert_match_data_from_json(conn, json_file):
     matches = []
@@ -464,6 +626,17 @@ def insert_event_data_from_json(conn, json_file, filename):
         insert_into_substitutions(conn, event_data, match_id)
         insert_into_foul_committed(conn, event_data, match_id)
         insert_into_foul_won(conn, event_data, match_id)
+        insert_into_50_50(conn, event_data, match_id)
+        insert_into_carry(conn, event_data, match_id)
+        insert_into_clearance(conn, event_data, match_id)
+        insert_into_dribbled_past(conn, event_data, match_id)
+        insert_into_bad_behaviour(conn, event_data, match_id)
+        insert_into_ball_receipt(conn, event_data, match_id)
+        insert_into_ball_recovery(conn, event_data, match_id)
+        insert_into_injury_stoppage(conn, event_data, match_id)
+        insert_into_interception(conn, event_data, match_id)
+        insert_into_miscontrol(conn, event_data, match_id)
+        insert_into_player_off(conn, event_data, match_id)
 
 # Main function
 def main():
