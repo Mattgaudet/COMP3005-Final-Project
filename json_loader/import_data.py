@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import psycopg
 from psycopg import Error
 
@@ -17,6 +18,7 @@ def connect_to_database():
 # Function to insert data into the Matches table
 def insert_into_matches(conn, match_data):
     cursor = conn.cursor()
+    match_ids = []
     for match in match_data:
         # Check if the team already exists in the table
         cursor.execute("SELECT 1 FROM Matches WHERE match_id = %s", (match['match_id'],))
@@ -40,7 +42,9 @@ def insert_into_matches(conn, match_data):
                 match['home_score'], match['away_score'], match['match_status'], match['match_week'], 
                 match['competition_stage']['id'], stadium_id, referee_id)
             )
+            match_ids.append(match['match_id'])
     conn.commit()
+    return match_ids
 
 def insert_into_managers(conn, match_data):
     cursor = conn.cursor()
@@ -73,7 +77,6 @@ def insert_into_managers_helper(cursor, match, team):
 # Function to insert data into the Teams table
 def insert_into_teams(conn, match_data):
     cursor = conn.cursor()
-
     for match in match_data:
         home_team = match['home_team']
         away_team = match['away_team']
@@ -91,7 +94,6 @@ def insert_into_teams(conn, match_data):
                 (home_team['home_team_id'], home_team['home_team_name'], home_team['home_team_gender'],
                 home_team['home_team_group'], home_team['country']['id'])
             )
-            
         # Insert away team
         if not existing_away_team:
             cursor.execute("""
@@ -108,8 +110,7 @@ def insert_into_referees(conn, match_data):
     cursor = conn.cursor()
     for match in match_data:
         if 'referee' in match:
-            referee = match['referee']
-            
+            referee = match['referee']          
             # Check if the referee already exists in the table
             cursor.execute("SELECT 1 FROM Referees WHERE referee_id = %s", (referee['id'],))
             existing_referee = cursor.fetchone()
@@ -261,7 +262,6 @@ def insert_into_passes(conn, event_data, match):
             outcome_name = _pass['outcome']['name'] if _pass.get('outcome') is not None else None
             body_part_id = _pass['body_part']['id'] if _pass.get('body_part') is not None else None
             body_part_name = _pass['body_part']['name'] if _pass.get('body_part') is not None else None
-
             cursor.execute("""
                     INSERT INTO Passes (event_id, match_id, recipient_id, length, angle, height_id,
                     height_name, end_location, body_part_id, body_part_name, assisted_shot_id, shot_assist,
@@ -324,7 +324,6 @@ def insert_into_dribbles(conn, event_data, match):
             overrun = dribble['overrun'] if dribble.get('overrun') is not None else None
             nutmeg = dribble['nutmeg'] if dribble.get('nutmeg') is not None else None
             no_touch = dribble['no_touch'] if dribble.get('no_touch') is not None else None
-            
             cursor.execute("""
                     INSERT INTO Dribbles (event_id, match_id, outcome_id, outcome_name, overrun, nutmeg, no_touch)
                     VALUES (%s, %s, %s, %s, %s, %s, %s)""",
@@ -364,7 +363,6 @@ def insert_into_goalkeeper(conn, event_data, match):
             body_part_name = keeper['body_part_name'] if keeper.get('body_part_name') is not None else None
             position_id = keeper['position']['id'] if keeper.get('position') is not None else None
             position_name = keeper['position']['name'] if keeper.get('position') is not None else None
-
             cursor.execute("""
                     INSERT INTO Goalkeeper (event_id, match_id, technique_id, technique_name, position_id, position_name, type_id, type_name,
                     outcome_id, outcome_name, body_part_id, body_part_name, end_location)
@@ -417,7 +415,6 @@ def insert_into_foul_won(conn, event_data, match):
             defensive = foul['defensive'] if foul.get('defensive') is not None else None
             advantage = foul['advantage'] if foul.get('advantage') is not None else None
             penalty = foul['penalty'] if foul.get('penalty') is not None else None
-
             cursor.execute("""
                     INSERT INTO Foul_Won (event_id, match_id, defensive, advantage, penalty)
                     VALUES (%s, %s, %s, %s, %s)""",
@@ -427,13 +424,15 @@ def insert_into_foul_won(conn, event_data, match):
 
 # Function to parse Match JSON data and insert into tables
 def insert_match_data_from_json(conn, json_file):
+    matches = []
     with open(json_file, 'r', encoding="utf-8") as f:
         match_data = json.load(f)
-        insert_into_matches(conn, match_data)
+        matches.append(insert_into_matches(conn, match_data))
         insert_into_managers(conn, match_data)
         insert_into_teams(conn, match_data)
         insert_into_referees(conn, match_data)
         insert_into_stadiums(conn, match_data)
+    return matches
 
 # Function to parse Competition JSON data and insert into tables
 def insert_competition_data_from_json(conn, json_file):
@@ -445,7 +444,7 @@ def insert_competition_data_from_json(conn, json_file):
 def insert_lineup_data_from_json(conn, json_file, filename):
     with open(json_file, 'r', encoding="utf-8") as file:
         lineup_data = json.load(file)
-        match_id = filename[:7]
+        match_id = filename.split('.')[0]
         insert_into_lineups(conn, lineup_data, match_id)
         insert_into_cards(conn, lineup_data, match_id)
         insert_into_positions(conn, lineup_data, match_id)
@@ -454,7 +453,7 @@ def insert_lineup_data_from_json(conn, json_file, filename):
 def insert_event_data_from_json(conn, json_file, filename):
     with open(json_file, 'r', encoding="utf-8") as file:
         event_data = json.load(file)
-        match_id = filename[:7]
+        match_id = filename.split('.')[0]
         insert_into_events(conn, event_data, match_id)
         insert_into_passes(conn, event_data, match_id)
         insert_into_shots(conn, event_data, match_id)
@@ -466,39 +465,48 @@ def insert_event_data_from_json(conn, json_file, filename):
         insert_into_foul_committed(conn, event_data, match_id)
         insert_into_foul_won(conn, event_data, match_id)
 
-
-
 # Main function
 def main():
     conn = connect_to_database()
     # Matches
-    json_file = "json_loader\\Data\\Matches\\M90.json"  # Path to JSON file La Liga 20/21
-    insert_match_data_from_json(conn, json_file)
-    json_file = "json_loader\\Data\\Matches\\M44.json"  # Path to JSON file Premier League 03/04
-    insert_match_data_from_json(conn, json_file)
+    match_ids = []
+    json_file = "json_loader\\Data\\matches\\11\\4.json"  # Path to JSON file La Liga 18/19
+    match_ids.extend(insert_match_data_from_json(conn, json_file))
+    json_file = "json_loader\\Data\\matches\\11\\42.json"  # Path to JSON file La Liga 19/20
+    match_ids.extend(insert_match_data_from_json(conn, json_file))
+    json_file = "json_loader\\Data\\matches\\11\\90.json"  # Path to JSON file La Liga 20/21
+    match_ids.extend(insert_match_data_from_json(conn, json_file))
+    json_file = "json_loader\\Data\\matches\\2\\44.json"  # Path to JSON file Premier League 03/04
+    match_ids.extend(insert_match_data_from_json(conn, json_file))
 
     #Competitions
     competition_json_file = "json_loader\\Data\\competitions.json"
     insert_competition_data_from_json(conn, competition_json_file)
     
-    #Lineups (add all files from the Lineups folder) TODO add files from la liga 18/19 and 19/20 
+    #Lineups 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    folder_path = os.path.join(script_dir, 'Data\\Lineups')
+    folder_path = os.path.join(script_dir, 'Data', 'Lineups')
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
-            file_path = os.path.join(folder_path, filename)
-            # if file_path[:4] in matches[]...
-            insert_lineup_data_from_json(conn, file_path, filename)
-            
-    #Events (add all files from the Events folder) TODO add files from la liga 18/19 and 19/20 
+            file_match_id = int(filename.split('.')[0])
+            for m in match_ids:
+                if file_match_id in m:
+                    file_path = os.path.join(folder_path, filename)
+                    insert_lineup_data_from_json(conn, file_path, filename)
+
+    #Events 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    folder_path = os.path.join(script_dir, 'Data\\Events')
+    folder_path = os.path.join(script_dir, 'Data', 'Events')
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
-            file_path = os.path.join(folder_path, filename)
-            insert_event_data_from_json(conn, file_path, filename)
+            file_match_id = int(filename.split('.')[0])
+            for m in match_ids:
+                if file_match_id in m:
+                    file_path = os.path.join(folder_path, filename)
+                    insert_event_data_from_json(conn, file_path, filename)
 
     conn.close()
+    print("Data imported")
 
 
 if __name__ == "__main__":

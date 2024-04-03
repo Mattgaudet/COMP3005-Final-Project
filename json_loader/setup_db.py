@@ -250,6 +250,33 @@ try:
     cursor.execute(create_table_query)
     print("Passes database table created")
 
+    #create the Shots table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Shots (
+            event_id VARCHAR(100) PRIMARY KEY,
+            match_id INT,
+            end_location VARCHAR(20),
+            key_pass_id VARCHAR(100),
+            statsbomb_xg NUMERIC(13, 9),
+            technique_id INT,
+            technique_name TEXT,
+            outcome_id INT,
+            outcome_name TEXT,
+            type_id INT,
+            type_name TEXT,
+            body_part_id INT,
+            body_part_name TEXT,
+            deflected BOOLEAN,
+            aerial_won BOOLEAN,
+            follows_dribble BOOLEAN,
+            first_time BOOLEAN,
+            open_goal BOOLEAN
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
+    print("Shots database table created")
+
     #create the Duels table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Duels (
