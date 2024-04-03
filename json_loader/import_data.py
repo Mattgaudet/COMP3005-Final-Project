@@ -247,6 +247,7 @@ def insert_into_passes(conn, event_data, match):
             recipient_id = _pass['recipient']['id'] if _pass.get('recipient') is not None else None
             height_id = _pass['height']['id'] if _pass.get('height') is not None else None
             height_name = _pass['height']['name'] if _pass.get('height') is not None else None
+            through_ball = _pass['through_ball'] if _pass.get('through_ball') is not None else None
             assisted_shot_id = _pass['assisted_shot_id'] if _pass.get('assisted_shot_id') is not None else None
             shot_assist = _pass['shot_assist'] if _pass.get('shot_assist') is not None else None
             goal_assist = _pass['goal_assist'] if _pass.get('goal_assist') is not None else None
@@ -264,11 +265,11 @@ def insert_into_passes(conn, event_data, match):
             body_part_name = _pass['body_part']['name'] if _pass.get('body_part') is not None else None
             cursor.execute("""
                     INSERT INTO Passes (event_id, match_id, recipient_id, length, angle, height_id,
-                    height_name, end_location, body_part_id, body_part_name, assisted_shot_id, shot_assist,
+                    height_name, through_ball, end_location, body_part_id, body_part_name, assisted_shot_id, shot_assist,
                     goal_assist, backheel, deflected, miscommunication, cross_, cutback, switch, technique_id,
                     technique_name, outcome_id, outcome_name)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                    (event['id'], match, recipient_id, _pass['length'], _pass['angle'], height_id, height_name, 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (event['id'], match, recipient_id, _pass['length'], _pass['angle'], height_id, height_name, through_ball, 
                      _pass['end_location'], body_part_id, body_part_name, assisted_shot_id,
                      shot_assist, goal_assist, backheel, deflected, miscommunication, cross, cutback, switch, technique_id,
                      technique_name, outcome_id, outcome_name)

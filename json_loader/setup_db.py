@@ -228,6 +228,7 @@ try:
             angle NUMERIC(12, 8),
             height_id INT,
             height_name TEXT,
+            through_ball BOOLEAN,
             end_location VARCHAR(20),
             body_part_id INT,
             body_part_name TEXT,
