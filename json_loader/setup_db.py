@@ -139,12 +139,7 @@ try:
             lineup_id SERIAL PRIMARY KEY,
             match_id INT,
             team_id INT,
-            team_name VARCHAR(50),
-            player_id INT,
-            player_name VARCHAR(50),
-            player_nickname VARCHAR(50),
-            jersey_number INT,
-            country_id INT
+            player_id INT
         );
         '''
     #execute the SQL statement
@@ -185,6 +180,19 @@ try:
     #execute the SQL statement
     cursor.execute(create_table_query)
     print("Positions database table created")
+
+    #create the Players table
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS Players (
+            player_id INT PRIMARY KEY,
+            player_name TEXT,
+            player_nickname TEXT,
+            jersey_number INT,
+            country_id INT
+        );
+        '''
+    #execute the SQL statement
+    cursor.execute(create_table_query)
 
     #create the Events table
     create_table_query = '''

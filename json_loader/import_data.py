@@ -163,12 +163,27 @@ def insert_into_lineups(conn, lineup_data, match):
         lineup_obj = lineup['lineup']
         for item in lineup_obj:
             cursor.execute("""
-                INSERT INTO Lineups (match_id, team_id, team_name, player_id, player_name, player_nickname, 
-                jersey_number, country_id)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
-                (match, lineup['team_id'], lineup['team_name'], item['player_id'], item['player_name'], 
-                    item['player_nickname'], item['jersey_number'], item['country']['id'])
+                INSERT INTO Lineups (match_id, team_id, player_id)
+                VALUES (%s, %s, %s)""",
+                (match, lineup['team_id'], item['player_id'])
             )
+    conn.commit()
+
+# Function to insert data into the Lineups table
+def insert_into_players(conn, lineup_data, match):
+    cursor = conn.cursor()
+    for lineup in lineup_data:
+        lineup_obj = lineup['lineup']
+        for item in lineup_obj:
+            cursor.execute("SELECT 1 FROM Players WHERE player_id = %s", (item['player_id'],))
+            existing_player = cursor.fetchone()
+            if not existing_player:
+                cursor.execute("""
+                    INSERT INTO Players (player_id, player_name, player_nickname, jersey_number, country_id)
+                    VALUES (%s, %s, %s, %s, %s)""",
+                    (item['player_id'], item['player_name'], item['player_nickname'], item['jersey_number'], 
+                    item['country']['id'])
+                )
     conn.commit()
 
 # Function to insert data into the cards table
@@ -609,6 +624,7 @@ def insert_lineup_data_from_json(conn, json_file, filename):
         lineup_data = json.load(file)
         match_id = filename.split('.')[0]
         insert_into_lineups(conn, lineup_data, match_id)
+        insert_into_players(conn, lineup_data, match_id)
         insert_into_cards(conn, lineup_data, match_id)
         insert_into_positions(conn, lineup_data, match_id)
 
