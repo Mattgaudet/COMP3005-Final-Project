@@ -213,7 +213,6 @@ try:
             team_id INT,
             player_id INT,
             position_id INT,
-            position_name VARCHAR(30),
             location VARCHAR(30),
             duration VARCHAR(20),
             under_pressure BOOLEAN,
@@ -229,8 +228,26 @@ try:
     #create the Passes table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Passes (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
+            index INT,
+            period INT,
+            timestamp VARCHAR(20),
+            minute INT,
+            second INT,
+            type_id INT,
+            possession INT,
+            possession_team_id INT,
+            play_pattern_id INT,
+            play_pattern_name VARCHAR(30),
+            team_id INT,
+            player_id INT,
+            position_id INT,
+            location VARCHAR(30),
+            duration VARCHAR(20),
+            under_pressure BOOLEAN,
+            off_camera BOOLEAN,
+            out BOOLEAN,
             recipient_id INT,
             length NUMERIC(12, 8),
             angle NUMERIC(12, 8),
@@ -262,7 +279,7 @@ try:
     #create the Shots table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Shots (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             end_location VARCHAR(20),
             key_pass_id VARCHAR(100),
@@ -289,7 +306,7 @@ try:
     #create the Duels table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Duels (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             type_id INT,
             type_name TEXT,
@@ -305,7 +322,7 @@ try:
     #create the Dribbles table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Dribbles (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             outcome_id INT,
             outcome_name TEXT,
@@ -321,7 +338,7 @@ try:
     #create the Blocks table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Blocks (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             deflection BOOLEAN,
             save_block BOOLEAN,
@@ -336,7 +353,7 @@ try:
     #create the Goalkeeper table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Goalkeeper (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             technique_id INT,
             technique_name TEXT,
@@ -358,7 +375,7 @@ try:
     #create the Substitutions table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Substitutions (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             outcome_id INT,
             outcome_name TEXT,
@@ -373,7 +390,7 @@ try:
     #create the Foul_Committed table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Foul_Committed (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             offensive BOOLEAN,
             advantage BOOLEAN,
@@ -392,7 +409,7 @@ try:
     #create the Foul_Won table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Foul_Won (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             defensive BOOLEAN,
             advantage BOOLEAN,
@@ -406,7 +423,7 @@ try:
     #create the _50_50 table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS _50_50 (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             outcome_id INT,
             outcome_name TEXT,
@@ -420,8 +437,27 @@ try:
     #create the Carry table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Carry (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
+            index INT,
+            period INT,
+            timestamp VARCHAR(20),
+            minute INT,
+            second INT,
+            type_id INT,
+            type_name VARCHAR(30),
+            possession INT,
+            possession_team_id INT,
+            play_pattern_id INT,
+            play_pattern_name VARCHAR(30),
+            team_id INT,
+            player_id INT,
+            position_id INT,
+            location VARCHAR(30),
+            duration VARCHAR(20),
+            under_pressure BOOLEAN,
+            off_camera BOOLEAN,
+            out BOOLEAN,
             end_location VARCHAR(30)
         );
         '''
@@ -432,7 +468,7 @@ try:
     #create the Clearance table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Clearance (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             aerial_won BOOLEAN,
             body_part_id INT,
@@ -446,7 +482,7 @@ try:
     #create the Dribbled_Past table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Dribbled_Past (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             counterpress BOOLEAN
         );
@@ -458,7 +494,7 @@ try:
     #create the Bad_Behavior table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Bad_Behaviour (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             card_id INT,
             card_name TEXT
@@ -471,7 +507,7 @@ try:
     #create the Ball_Receipt table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Ball_Receipt (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             outcome_id INT,
             outcome_name TEXT
@@ -484,7 +520,7 @@ try:
     #create the Ball_Recovery table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Ball_Recovery (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             offensive BOOLEAN
         );
@@ -496,7 +532,7 @@ try:
     #create the Injury_Stoppage table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Injury_Stoppage (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             in_chain BOOLEAN
         );
@@ -508,7 +544,7 @@ try:
     #create the Interception table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Interception (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             outcome_id INT,
             outcome_name TEXT
@@ -521,7 +557,7 @@ try:
     #create the Miscontrol table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Miscontrol (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             aerial_won BOOLEAN
         );
@@ -533,7 +569,7 @@ try:
     #create the Player_Off table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Player_Off (
-            event_id VARCHAR(100) PRIMARY KEY,
+            event_id VARCHAR(50) PRIMARY KEY,
             match_id INT,
             permanent BOOLEAN
         );

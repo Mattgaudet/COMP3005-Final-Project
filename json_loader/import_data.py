@@ -222,18 +222,15 @@ def insert_into_positions(conn, lineup_data, match):
 def insert_into_events(conn, event_data, match):
     cursor = conn.cursor()
     for event in event_data:
+        if event['type']['id'] == 30 or  event['type']['id'] == 43: #pass and carry have their own tables
+            continue
         # Check if the event already exists in the table
         cursor.execute("SELECT 1 FROM Events WHERE event_id = %s", (event['id'],))
         existing_event = cursor.fetchone()
         if not existing_event:
             out = event['out'] if event.get('out') is not None else None
             player = event['player']['id'] if event.get('player') is not None else None
-            if event.get('position') is not None: 
-                position_id = event['position']['id']
-                position_name = event['position']['name']
-            else:
-                position_id = None
-                position_name = None
+            position_id = event['position']['id'] if event.get('position') is not None else None
             off_camera = event['off_camera'] if event.get('off_camera') is not None else None
             under_pressure = event['under_pressure'] if event.get('under_pressure') is not None else None
             tactics_formation = event['tactics']['formation'] if event.get('tactics') is not None else None
@@ -242,13 +239,13 @@ def insert_into_events(conn, event_data, match):
             cursor.execute("""
                 INSERT INTO Events (event_id, match_id, index, period, timestamp, minute, second, 
                 type_id, type_name, possession, possession_team_id, play_pattern_id, play_pattern_name, 
-                team_id, player_id, position_id, position_name, location, duration, 
+                team_id, player_id, position_id, location, duration, 
                 under_pressure, off_camera, out, tactics_formation)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (event['id'], match, event['index'], event['period'], event['timestamp'], event['minute'], event['second'],
                  event['type']['id'], event['type']['name'], event['possession'], event['possession_team']['id'],
                  event['play_pattern']['id'], event['play_pattern']['name'],
-                 event['team']['id'], player, position_id, position_name, 
+                 event['team']['id'], player, position_id, 
                  location, duration, under_pressure, off_camera, out, tactics_formation)
             )
     conn.commit()
@@ -259,6 +256,14 @@ def insert_into_passes(conn, event_data, match):
     for event in event_data:
         if event.get('pass') is not None:
             _pass = event['pass']
+            out = event['out'] if event.get('out') is not None else None
+            player = event['player']['id'] if event.get('player') is not None else None
+            position_id = event['position']['id'] if event.get('position') is not None else None
+            off_camera = event['off_camera'] if event.get('off_camera') is not None else None
+            under_pressure = event['under_pressure'] if event.get('under_pressure') is not None else None
+            tactics_formation = event['tactics']['formation'] if event.get('tactics') is not None else None
+            location = event['location'] if event.get('location') is not None else None
+            duration = event['duration'] if event.get('duration') is not None else None
             recipient_id = _pass['recipient']['id'] if _pass.get('recipient') is not None else None
             height_id = _pass['height']['id'] if _pass.get('height') is not None else None
             height_name = _pass['height']['name'] if _pass.get('height') is not None else None
@@ -279,12 +284,20 @@ def insert_into_passes(conn, event_data, match):
             body_part_id = _pass['body_part']['id'] if _pass.get('body_part') is not None else None
             body_part_name = _pass['body_part']['name'] if _pass.get('body_part') is not None else None
             cursor.execute("""
-                    INSERT INTO Passes (event_id, match_id, recipient_id, length, angle, height_id,
+                    INSERT INTO Passes (event_id, match_id, index, period, timestamp, minute, second, 
+                    type_id, possession, possession_team_id, play_pattern_id, play_pattern_name, 
+                    team_id, player_id, position_id, location, duration, under_pressure, off_camera, out, recipient_id, length, angle, height_id,
                     height_name, through_ball, end_location, body_part_id, body_part_name, assisted_shot_id, shot_assist,
-                    goal_assist, backheel, deflected, miscommunication, cross_, cutback, switch, technique_id,
-                    technique_name, outcome_id, outcome_name)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                    (event['id'], match, recipient_id, _pass['length'], _pass['angle'], height_id, height_name, through_ball, 
+                    goal_assist, backheel, deflected, miscommunication, cross_, cutback, switch, technique_id, technique_name, outcome_id, outcome_name)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (event['id'], match, event['index'], event['period'], event['timestamp'], event['minute'], event['second'],
+                    event['type']['id'], event['possession'], event['possession_team']['id'],
+                    event['play_pattern']['id'], event['play_pattern']['name'],
+                    event['team']['id'], player, position_id, location, duration, under_pressure, off_camera, out,
+                     
+                     
+                     recipient_id, _pass['length'], _pass['angle'], height_id, height_name, through_ball, 
                      _pass['end_location'], body_part_id, body_part_name, assisted_shot_id,
                      shot_assist, goal_assist, backheel, deflected, miscommunication, cross, cutback, switch, technique_id,
                      technique_name, outcome_id, outcome_name)
@@ -459,12 +472,25 @@ def insert_into_carry(conn, event_data, match):
     cursor = conn.cursor()
     for event in event_data:
         if event.get('carry') is not None:
+            out = event['out'] if event.get('out') is not None else None
+            player = event['player']['id'] if event.get('player') is not None else None
+            position_id = event['position']['id'] if event.get('position') is not None else None
+            off_camera = event['off_camera'] if event.get('off_camera') is not None else None
+            under_pressure = event['under_pressure'] if event.get('under_pressure') is not None else None
+            location = event['location'] if event.get('location') is not None else None
+            duration = event['duration'] if event.get('duration') is not None else None
             carry = event['carry']
             end_location = carry['end_location'] if carry.get('end_location') is not None else None
             cursor.execute("""
-                    INSERT INTO Carry (event_id, match_id, end_location)
-                    VALUES (%s, %s, %s)""",
-                    (event['id'], match, end_location)
+                    INSERT INTO Carry (event_id, match_id, index, period, timestamp, minute, second, 
+                    type_id, type_name, possession, possession_team_id, play_pattern_id, play_pattern_name, 
+                    team_id, player_id, position_id, location, duration, 
+                    under_pressure, off_camera, out, end_location)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (event['id'], match, event['index'], event['period'], event['timestamp'], event['minute'], event['second'],
+                    event['type']['id'], event['type']['name'], event['possession'], event['possession_team']['id'],
+                    event['play_pattern']['id'], event['play_pattern']['name'],
+                    event['team']['id'], player, position_id, location, duration, under_pressure, off_camera, out,end_location)
                 )
     conn.commit()
 
