@@ -32,7 +32,7 @@ For the user "postgres", you must MANUALLY set the password to 1234.
 root_database_name = "project_database"
 query_database_name = "query_database"
 db_username = 'postgres'
-db_password = '1234'
+db_password = 'password'
 db_host = 'localhost'
 db_port = '5432'
 
@@ -296,7 +296,13 @@ def Q_8(cursor, conn, execution_time):
     #==========================================================================    
     # Enter QUERY within the quotes:
     
-    query = """ """
+    query = """SELECT teams.team_name, COUNT(lineups.team_id) AS num_through_balls FROM passes
+            INNER JOIN lineups ON passes.match_id = lineups.match_id
+            INNER JOIN matches ON lineups.match_id = matches.match_id
+            INNER JOIN teams ON lineups.team_id = teams.team_id
+            WHERE passes.through_ball = true AND matches.competition_id = 11 AND matches.season_id = 90
+            GROUP BY teams.team_name
+            ORDER BY num_through_balls DESC """
 
     #==========================================================================
 
@@ -314,7 +320,15 @@ def Q_9(cursor, conn, execution_time):
     #==========================================================================    
     # Enter QUERY within the quotes:
     
-    query = """ """
+    query = """SELECT players.player_name, COUNT(events.player_id) AS Num_Dribbles FROM events
+                INNER JOIN matches ON events.match_id = matches.match_id
+                INNER JOIN dribbles ON events.event_id = dribbles.event_id
+                INNER JOIN players ON events.player_id = players.player_id
+                WHERE type_name = 'Dribble' AND matches.competition_id = 11 
+                AND (matches.season_id = 4 OR matches.season_id = 42 OR matches.season_id = 90) 
+                AND dribbles.outcome_name = 'Complete'
+                GROUP BY players.player_name
+                ORDER BY Num_Dribbles DESC """
 
     #==========================================================================
 
@@ -332,7 +346,13 @@ def Q_10(cursor, conn, execution_time):
     #==========================================================================    
     # Enter QUERY within the quotes:
     
-    query = """ """
+    query = """SELECT players.player_name, COUNT(events.player_id) AS dribbled_past FROM events
+                INNER JOIN matches ON events.match_id = matches.match_id
+                INNER JOIN players ON events.player_id = players.player_id
+                WHERE type_name = 'Dribbled Past' AND matches.competition_id = 11 
+                AND matches.season_id = 90
+                GROUP BY players.player_name
+                ORDER BY dribbled_past ASC """
 
     #==========================================================================
 
