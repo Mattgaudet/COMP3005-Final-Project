@@ -168,7 +168,28 @@ def Q_1(cursor, conn, execution_time):
     #==========================================================================
     # Enter QUERY within the quotes:
 
-    query = """ """
+    query = """ 
+
+    SELECT
+        p.player_name,
+        COUNT(pas.event_id) AS through_ball_count
+    FROM
+        Passes pas
+    JOIN
+        Players p ON pas.player_id = p.player_id
+    JOIN
+        Matches m ON pas.match_id = m.match_id
+    JOIN
+        Competitions c ON m.competition_id = c.competition_id
+    WHERE
+        c.season_name = '2020/2021'
+        AND pas.through_ball = TRUE
+    GROUP BY
+        p.player_name
+    ORDER BY
+        through_ball_count DESC;
+
+    """
 
     #==========================================================================
 
@@ -206,7 +227,32 @@ def Q_3(cursor, conn, execution_time):
     #==========================================================================    
     # Enter QUERY within the quotes:
     
-    query = """ """
+    query = """ 
+
+    SELECT
+        p.player_name,
+        COUNT(s.event_id) AS num_first_time_shots
+    FROM
+        Events e
+    JOIN
+        Shots s ON e.event_id = s.event_id
+    JOIN
+        Players p ON e.player_id = p.player_id
+    JOIN
+        Matches m ON e.match_id = m.match_id
+    JOIN
+        Competitions c ON m.competition_id = c.competition_id
+    WHERE
+        c.season_name IN ('2020/2021', '2019/2020', '2018/2019')
+        AND s.first_time = TRUE
+    GROUP BY
+        p.player_name
+    HAVING
+        COUNT(s.event_id) >= 1
+    ORDER BY
+        num_first_time_shots DESC;
+
+    """
 
     #==========================================================================
 
@@ -278,7 +324,28 @@ def Q_7(cursor, conn, execution_time):
     #==========================================================================    
     # Enter QUERY within the quotes:
     
-    query = """ """
+    query = """ 
+
+    SELECT
+        p.player_name,
+        COUNT(pas.event_id) AS through_ball_count
+    FROM
+        Passes pas
+    JOIN
+        Players p ON pas.player_id = p.player_id
+    JOIN
+        Matches m ON pas.match_id = m.match_id
+    JOIN
+        Competitions c ON m.competition_id = c.competition_id
+    WHERE
+        c.season_name = '2020/2021'
+        AND pas.through_ball = TRUE
+    GROUP BY
+        p.player_name
+    ORDER BY
+        through_ball_count DESC;
+
+    """
 
     #==========================================================================
 
