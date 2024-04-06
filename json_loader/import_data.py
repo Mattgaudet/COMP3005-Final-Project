@@ -143,17 +143,13 @@ def insert_into_stadiums(conn, match_data):
 def insert_into_competitions(conn, competition_data):
     cursor = conn.cursor()
     for comp in competition_data:
-        # Check if the team already exists in the table
-        cursor.execute("SELECT 1 FROM Competitions WHERE competition_id = %s", (comp['competition_id'],))
-        existing_competition = cursor.fetchone()
-        if not existing_competition:
-            cursor.execute("""
-                INSERT INTO Competitions (competition_id, season_id, country_name, competition_name, competition_gender,
-                competition_youth, competition_international, season_name)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
-                (comp['competition_id'], comp['season_id'], comp['country_name'], comp['competition_name'], 
-                 comp['competition_gender'], comp['competition_youth'], comp['competition_international'], comp['season_name'])
-            )
+        cursor.execute("""
+            INSERT INTO Competitions (competition_id, season_id, country_name, competition_name, competition_gender,
+            competition_youth, competition_international, season_name)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+            (comp['competition_id'], comp['season_id'], comp['country_name'], comp['competition_name'], 
+                comp['competition_gender'], comp['competition_youth'], comp['competition_international'], comp['season_name'])
+        )
     conn.commit()
 
 # Function to insert data into the Lineups table

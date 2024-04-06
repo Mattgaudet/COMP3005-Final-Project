@@ -21,7 +21,8 @@ try:
     #create the competitions table 
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Competitions (
-            competition_id INT PRIMARY KEY UNIQUE,
+            id SERIAL PRIMARY KEY,
+            competition_id INT,
             season_id INT,
             country_name VARCHAR(30),
             competition_name VARCHAR(30),
