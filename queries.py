@@ -288,7 +288,19 @@ def Q_5(cursor, conn, execution_time):
     #==========================================================================    
     # Enter QUERY within the quotes:
     
-    query = """ """
+    query = """ 
+
+    SELECT p.player_name, COUNT(pa.recipient_id) AS pass_count
+    FROM Passes pa
+    JOIN Players p ON pa.recipient_id = p.player_id
+    JOIN Matches m ON pa.match_id = m.match_id
+    JOIN Competitions c ON m.competition_id = c.competition_id
+    WHERE c.season_name = '2003/2004'
+    GROUP BY p.player_name
+    HAVING COUNT(pa.recipient_id) >= 1
+    ORDER BY pass_count DESC;
+    
+    """
 
     #==========================================================================
 
