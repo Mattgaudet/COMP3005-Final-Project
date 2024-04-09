@@ -1,7 +1,7 @@
 import psycopg
 DB_NAME = "postgres"
 DB_USER = "postgres"
-DB_PASSWORD = "password"
+DB_PASSWORD = "1234"
 DB_HOST = "localhost"
 DB_PORT = 5432
 
@@ -34,7 +34,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("competitions database table created")
 
     #create the matches table
     create_table_query = '''
@@ -57,7 +56,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("matches database table created")
 
     #create the Managers table
     create_table_query = '''
@@ -71,7 +69,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Managers database table created")
 
     #create the Match-Managers table
     create_table_query = '''
@@ -83,7 +80,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Match-Managers database table created")
 
     #create the Teams table
     create_table_query = '''
@@ -97,7 +93,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("teams database table created")
 
     #create the matches table
     create_table_query = '''
@@ -109,9 +104,8 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("referees database table created")
 
-    #create the matches table
+    #create the stadiums table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Stadiums (
             stadium_id INT PRIMARY KEY,
@@ -121,18 +115,16 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("stadiums database table created")
 
     #create the Countries table
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS Countries (
             country_id INT PRIMARY KEY,
-            country_name VARCHAR(20)
+            country_name TEXT
         );
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("countries database table created")
 
     #create the Lineups table
     create_table_query = '''
@@ -145,7 +137,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("lineups database table created")
 
     #create the Cards table
     create_table_query = '''
@@ -161,7 +152,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Cards database table created")
 
     #create the Positions table
     create_table_query = '''
@@ -180,7 +170,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Positions database table created")
 
     #create the Players table
     create_table_query = '''
@@ -224,7 +213,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Events database table created")
 
     #create the Passes table
     create_table_query = '''
@@ -275,7 +263,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Passes database table created")
 
     #create the Shots table
     create_table_query = '''
@@ -302,7 +289,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Shots database table created")
 
     #create the Duels table
     create_table_query = '''
@@ -318,7 +304,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Duels database table created")
 
     #create the Dribbles table
     create_table_query = '''
@@ -334,7 +319,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Dribbles database table created")
 
     #create the Blocks table
     create_table_query = '''
@@ -349,7 +333,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Blocks database table created")
 
     #create the Goalkeeper table
     create_table_query = '''
@@ -371,7 +354,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Goalkeeper database table created")
 
     #create the Substitutions table
     create_table_query = '''
@@ -386,7 +368,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Substitutions database table created")
 
     #create the Foul_Committed table
     create_table_query = '''
@@ -405,7 +386,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Foul_Committed database table created")
 
     #create the Foul_Won table
     create_table_query = '''
@@ -419,7 +399,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Foul_Won database table created")
 
     #create the _50_50 table
     create_table_query = '''
@@ -433,7 +412,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("_50_50 database table created")
 
     #create the Carry table
     create_table_query = '''
@@ -464,7 +442,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Carry database table created")
 
     #create the Clearance table
     create_table_query = '''
@@ -478,7 +455,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Clearance database table created")
 
     #create the Dribbled_Past table
     create_table_query = '''
@@ -490,7 +466,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Dribbled_Past database table created")
 
     #create the Bad_Behavior table
     create_table_query = '''
@@ -503,7 +478,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Bad_Behavior database table created")
 
     #create the Ball_Receipt table
     create_table_query = '''
@@ -516,7 +490,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Ball_Receipt database table created")
 
     #create the Ball_Recovery table
     create_table_query = '''
@@ -528,7 +501,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Ball_Recovery database table created")
 
     #create the Injury_Stoppage table
     create_table_query = '''
@@ -540,7 +512,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Injury_Stoppage database table created")
 
     #create the Interception table
     create_table_query = '''
@@ -553,7 +524,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Interception database table created")
 
     #create the Miscontrol table
     create_table_query = '''
@@ -565,7 +535,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Miscontrol database table created")
 
     #create the Player_Off table
     create_table_query = '''
@@ -577,7 +546,6 @@ try:
         '''
     #execute the SQL statement
     cursor.execute(create_table_query)
-    print("Player_Off database table created")
 
     #commit the changes
     conn.commit()

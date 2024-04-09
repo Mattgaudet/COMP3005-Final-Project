@@ -1,15 +1,16 @@
 import json
 import os
-import shutil
 import psycopg
-from psycopg import Error
+
+# ***Change to your cloned repo data location***
+PATH_TO_CLONED_REPO_DATA = "C:\\Users\\mattg\\Documents\\School\\Third Year\\open-data\\data"
 
 # Function to establish a connection to the PostgreSQL database
 def connect_to_database():
     conn = psycopg.connect(
         dbname="postgres",
         user="postgres",
-        password="password",
+        password="1234",
         host="localhost",
         port="5432"
     )
@@ -211,6 +212,23 @@ def insert_into_positions(conn, lineup_data, match):
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                     (match, item['player_id'], position['position'], position['from'], position['to'], 
                      position['from_period'], position['to_period'], position['start_reason'], position['end_reason'])
+                )
+    conn.commit()
+
+# Function to insert data into the countries table
+def insert_into_countries(conn, lineup_data, match):
+    cursor = conn.cursor()
+    for lineup in lineup_data:
+        lineup_obj = lineup['lineup']
+        for item in lineup_obj:
+            country = item['country']
+            cursor.execute("SELECT 1 FROM Countries WHERE country_id = %s", (country['id'],))
+            existing_country = cursor.fetchone()
+            if not existing_country:
+                cursor.execute("""
+                    INSERT INTO Countries (country_id, country_name)
+                    VALUES (%s, %s)""",
+                    (country['id'], country['name'])
                 )
     conn.commit()
 
@@ -649,6 +667,7 @@ def insert_lineup_data_from_json(conn, json_file, filename):
         insert_into_players(conn, lineup_data, match_id)
         insert_into_cards(conn, lineup_data, match_id)
         insert_into_positions(conn, lineup_data, match_id)
+        insert_into_countries(conn, lineup_data, match_id)
 
 # Function to parse Events JSON data and insert into tables
 def insert_event_data_from_json(conn, json_file, filename):
@@ -680,31 +699,28 @@ def insert_event_data_from_json(conn, json_file, filename):
 # Main function
 def main():
     conn = connect_to_database()
-    # *Change to your cloned repo data location*
-    path_to_cloned_repo_data = "C:\\Users\\mattg\\Documents\\School\\Third Year\\open-data\\data"
-
     # Matches
     match_ids = []
     # Path to JSON file La Liga 18/19
-    json_file = os.path.join(path_to_cloned_repo_data, "matches", "11", "4.json")
+    json_file = os.path.join(PATH_TO_CLONED_REPO_DATA, "matches", "11", "4.json")
     match_ids.extend(insert_match_data_from_json(conn, json_file))
     # Path to JSON file La Liga 19/20
-    json_file = os.path.join(path_to_cloned_repo_data, "matches", "11", "42.json")
+    json_file = os.path.join(PATH_TO_CLONED_REPO_DATA, "matches", "11", "42.json")
     match_ids.extend(insert_match_data_from_json(conn, json_file))
     # Path to JSON file La Liga 20/21
-    json_file = os.path.join(path_to_cloned_repo_data, "matches", "11", "90.json")
+    json_file = os.path.join(PATH_TO_CLONED_REPO_DATA, "matches", "11", "90.json")
     match_ids.extend(insert_match_data_from_json(conn, json_file))
     # Path to JSON file Premier League 03/04
-    json_file = os.path.join(path_to_cloned_repo_data, "matches", "2", "44.json")
+    json_file = os.path.join(PATH_TO_CLONED_REPO_DATA, "matches", "2", "44.json")
     match_ids.extend(insert_match_data_from_json(conn, json_file))
 
     #Competitions
     
-    competition_json_file = os.path.join(path_to_cloned_repo_data, "competitions.json")
+    competition_json_file = os.path.join(PATH_TO_CLONED_REPO_DATA, "competitions.json")
     insert_competition_data_from_json(conn, competition_json_file)
     
     #Lineups 
-    folder_path = os.path.join(path_to_cloned_repo_data, "lineups")
+    folder_path = os.path.join(PATH_TO_CLONED_REPO_DATA, "lineups")
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
             file_match_id = int(filename.split('.')[0])
@@ -714,7 +730,7 @@ def main():
                     insert_lineup_data_from_json(conn, file_path, filename)
 
     #Events 
-    folder_path = os.path.join(path_to_cloned_repo_data, "events")
+    folder_path = os.path.join(PATH_TO_CLONED_REPO_DATA, "events")
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
             file_match_id = int(filename.split('.')[0])
@@ -724,8 +740,6 @@ def main():
                     insert_event_data_from_json(conn, file_path, filename)
 
     conn.close()
-    print("Data imported")
-
 
 if __name__ == "__main__":
     main()
