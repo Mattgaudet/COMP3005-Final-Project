@@ -388,10 +388,9 @@ def Q_8(cursor, conn, execution_time):
     # Enter QUERY within the quotes:
     
     query = """
-            SELECT teams.team_name, COUNT(lineups.team_id) AS num_through_balls FROM passes
-            INNER JOIN lineups ON passes.match_id = lineups.match_id
-            INNER JOIN matches ON lineups.match_id = matches.match_id
-            INNER JOIN teams ON lineups.team_id = teams.team_id
+            SELECT teams.team_name, COUNT(teams.team_id) AS num_through_balls FROM passes
+            INNER JOIN matches ON passes.match_id = matches.match_id
+            INNER JOIN teams ON passes.team_id = teams.team_id
             INNER JOIN competitions c ON matches.competition_id = c.competition_id
             WHERE passes.through_ball = true AND c.competition_name = 'La Liga'
                 AND c.season_name = '2020/2021'

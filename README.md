@@ -1,7 +1,7 @@
 # COMP3005-Final-Project
 
 ## Team members
-- Matthew Gaudet 101193256
+- Matthew Gaudet
 - Satyan Thayaparan
 - Ben Bhashyam
 
